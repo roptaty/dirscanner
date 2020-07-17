@@ -1,22 +1,32 @@
 package dirscanner
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+func GetPathRegex() string {
+	if os.PathSeparator == '\\' {
+		return `\\`
+	}
+
+	return string(os.PathSeparator)
+}
+
 func TestDirScannerWithEntries(t *testing.T) {
 	scanner := NewScanner()
+
 	includes := []string{`.*\.crt`}
-	excludes := []string{`.*\\node_modules`}
+	excludes := []string{`.*` + GetPathRegex() + `node_modules`}
 
 	if err := scanner.AddNeedle("crt", includes, excludes); err != nil {
 		t.Errorf("ERROR crt regex")
 	}
 
 	includes = []string{`.*\.csproj`}
-	excludes = []string{`.*\\bin`}
+	excludes = []string{`.*` + GetPathRegex() + `bin`}
 
 	if err := scanner.AddNeedle("nuget", includes, excludes); err != nil {
 		t.Errorf("ERROR csproj regex ")
@@ -40,7 +50,7 @@ func TestDirScannerWithNoEntries(t *testing.T) {
 func TestDirScannerWithInvalidSrcPath(t *testing.T) {
 	scanner := NewScanner()
 	includes := []string{`.*\.crt`}
-	excludes := []string{`.*\\node_modules`}
+	excludes := []string{`.*` + GetPathRegex() + `node_modules`}
 
 	if err := scanner.AddNeedle("crt", includes, excludes); err != nil {
 		t.Errorf("ERROR crt regex")
